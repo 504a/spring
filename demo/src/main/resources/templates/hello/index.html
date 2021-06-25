@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<title>Hello</title>
+	<link rel="stylesheet" th:href="@{/webjars/bootstrap/4.5.3/css/bootstrap.min.css}">
+    <script th:href="@{webjars/jquery/3.5.1/js/jquery.min.js}"></script>
+    <script th:href="@{webjars/bootstrap/4.5.3/js/bootstrap.min.js}"></script>
+</head>
+<body>
+	<div class="container mt-4">
+		<p th:text="${message}"></p>
+	</div>
+</body>
+</html>
