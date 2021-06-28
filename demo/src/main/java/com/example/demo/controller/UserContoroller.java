@@ -4,12 +4,16 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -20,6 +24,8 @@ import com.example.demo.service.UserService;
 @Controller
 @RequestMapping("users")
 public class UserContoroller {
+
+	private boolean updatePrev = false;
 
 	final static Map<String, Boolean> RADIO_ITEMS = Collections.unmodifiableMap(new LinkedHashMap<String, Boolean>() {
 		/**
@@ -37,6 +43,12 @@ public class UserContoroller {
 	@Autowired
 	private UserService service;
 
+	/**
+	 * 一覧表示
+	 * 
+	 * @param model
+	 * @return
+	 */
 	@GetMapping("")
 	public String index(Model model) {
 		List<User> list = service.findAll();
@@ -45,9 +57,138 @@ public class UserContoroller {
 		return "users/index";
 	}
 
+	/**
+	 * 削除確認
+	 * 
+	 * @param id
+	 * @param model
+	 * @return
+	 */
+	@PostMapping("/delete/confirm/{id}")
+	public String deleteConfirm(@PathVariable Long id, Model model) {
+		Optional<User> optional = service.findById(id);
+		if (optional.isPresent()) {
+			model.addAttribute("user", optional.get());
+			return "users/delete/confirm";
+		} else {
+			return "redirect:/users/";
+		}
+	}
+
+	/**
+	 * 削除処理
+	 *
+	 * @param id
+	 * @return
+	 */
+	@PostMapping("/delete/{id}")
+	public String delete(@PathVariable Long id) {
+		service.deleteById(id);
+		return "redirect:/users/";
+	}
+
+	/**
+	 * 新規作成フォーム
+	 *
+	 * @param form
+	 * @param model
+	 * @return
+	 */
 	@PostMapping("/create/form/")
 	public String createForm(@ModelAttribute UserForm form, Model model) {
 		model.addAttribute("radioItems", RADIO_ITEMS);
-		return "student/create/form";
+		return "users/create/form";
 	}
+
+	/**
+	 * 新規作成確認
+	 *
+	 * @param form
+	 * @param model
+	 * @return
+	 */
+	@PostMapping("/create/confirm/")
+	public String createConfirm(@Validated @ModelAttribute UserForm form, BindingResult result, Model model) {
+		if (result.hasErrors())
+			return createForm(form, model);
+		return "users/create/confirm";
+	}
+
+	/**
+	 * 新規作成登録
+	 *
+	 * @param form
+	 * @param model
+	 * @return
+	 */
+	@PostMapping("/create/")
+	public String create(@ModelAttribute UserForm form, Model model) {
+		User user = new User();
+		user.setName(form.getName());
+		user.setGender(form.isGender());
+		user.setBirth(form.getBirth());
+		service.save(user);
+		return "redirect:/users/";
+	}
+
+	/**
+	 * 更新フォーム
+	 *
+	 * @param id
+	 * @param form
+	 * @param model
+	 * @return
+	 */
+	@PostMapping("/update/form/{id}")
+	public String updateForm(@PathVariable Long id, @ModelAttribute UserForm form, Model model) {
+		model.addAttribute("radioItems", RADIO_ITEMS);
+		if (!updatePrev) {
+			Optional<User> optional = service.findById(id);
+			if (optional.isPresent()) {
+				User user = optional.get();
+				System.out.println(user);
+				form.setId(user.getId());
+				form.setName(user.getName());
+				form.setGender(user.isGender());
+				form.setBirth(form.getBirth());
+			} else {
+				return "redirect:/users/";
+			}
+		}
+		return "users/update/form";
+	}
+
+	/**
+	 * 更新確認
+	 *
+	 * @param form
+	 * @param model
+	 * @return
+	 */
+	@PostMapping("/update/confirm/")
+	public String updateConfirm(@Validated @ModelAttribute UserForm form, BindingResult result, Model model) {
+		if (result.hasErrors())
+			return updateForm(form.getId(), form, model);
+		updatePrev = true;
+		return "users/update/confirm";
+	}
+
+	/**
+	 * 更新処理
+	 *
+	 * @param form
+	 * @param model
+	 * @return
+	 */
+	@PostMapping("/update/")
+	public String update(@ModelAttribute UserForm form, Model model) {
+		User user = new User();
+		user.setId(form.getId());
+		user.setName(form.getName());
+		user.setGender(form.isGender());
+		user.setBirth(form.getBirth());
+		service.save(user);
+		return "redirect:/users/";
+	}
+
 }
