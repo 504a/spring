@@ -1,5 +1,8 @@
 package com.example.demo.model;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -26,12 +29,12 @@ public class User {
 	private boolean gender;
 
 	@Column(name = "birth")
-	private java.sql.Date birth;
+	private LocalDate birth;
 
 	@Column(name = "created_at")
-	private java.sql.Timestamp created_at;
+	private LocalDateTime created_at;
 
 	@Column(name = "updated_at")
-	private java.sql.Timestamp updated_at;
+	private LocalDateTime updated_at;
 
 }

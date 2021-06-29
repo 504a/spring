@@ -1,5 +1,7 @@
 package com.example.demo.controller;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -126,7 +128,7 @@ public class UserContoroller {
 		User user = new User();
 		user.setName(form.getName());
 		user.setGender(form.isGender());
-		user.setBirth(form.getBirth());
+		user.setBirth(LocalDate.parse(form.getBirth()));
 		service.save(user);
 		return "redirect:/users/";
 	}
@@ -146,11 +148,10 @@ public class UserContoroller {
 			Optional<User> optional = service.findById(id);
 			if (optional.isPresent()) {
 				User user = optional.get();
-				System.out.println(user);
 				form.setId(user.getId());
 				form.setName(user.getName());
 				form.setGender(user.isGender());
-				form.setBirth(form.getBirth());
+				form.setBirth(DateTimeFormatter.ofPattern("yyyy-MM-dd").format(user.getBirth()));
 			} else {
 				return "redirect:/users/";
 			}
@@ -186,7 +187,7 @@ public class UserContoroller {
 		user.setId(form.getId());
 		user.setName(form.getName());
 		user.setGender(form.isGender());
-		user.setBirth(form.getBirth());
+		user.setBirth(LocalDate.parse(form.getBirth()));
 		service.save(user);
 		return "redirect:/users/";
 	}

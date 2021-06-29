@@ -30,7 +30,7 @@
 					<td th:text="${user.name}"></td>
 					<td th:if="${user.gender}">男</td>
 					<td th:unless="${user.gender}">女</td>
-					<td th:text="${#dates.format(user.birth,'yyyy/MM/dd')}"></td>
+					<td th:text="${user.birth}"></td>
 					<td>
 	    				<form th:action="@{/users/update/form/{id}(id=${user.id})}" th:method="post">
 	    					<button class="btn btn-outline-dark btn-block" type="submit">更新</button>

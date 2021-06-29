@@ -18,8 +18,11 @@ public class UserForm {
 	@Size(min = 1, max = 10)
 	private String name;
 
+	@NotNull
 	private boolean gender = true;
 
-	private Strintg birth;
+	@NotNull
+	@NotBlank
+	private String birth;
 
 }
