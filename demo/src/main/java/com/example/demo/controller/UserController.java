@@ -19,13 +19,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.example.demo.form.SearchNameForm;
 import com.example.demo.form.UserForm;
 import com.example.demo.model.User;
 import com.example.demo.service.UserService;
 
 @Controller
 @RequestMapping("users")
-public class UserContoroller {
+public class UserController {
 
 	private boolean updatePrev = false;
 
@@ -192,4 +193,15 @@ public class UserContoroller {
 		return "redirect:/users/";
 	}
 
+	@GetMapping("/search")
+	public String greetingForm(@ModelAttribute SearchNameForm form, Model model) {
+		return "users/search/index";
+	}
+
+	@PostMapping("/search")
+	public String greetingSubmit(@ModelAttribute SearchNameForm form, Model model) {
+		List<User> list = service.findByNameContaining(form.getName());
+		model.addAttribute("list", list);
+		return "users/search/result";
+	}
 }

@@ -30,4 +30,8 @@ public class UserService {
 	public void save(User student) {
 		repository.save(student);
 	}
+
+	public List<User> findByNameContaining(String name) {
+		return repository.findByNameContaining(name);
+	}
 }
