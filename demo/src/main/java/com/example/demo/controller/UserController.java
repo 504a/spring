@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -53,10 +55,11 @@ public class UserController {
 	 * @return
 	 */
 	@GetMapping("")
-	public String index(Model model) {
-		List<User> list = service.findAll();
-		System.out.println(list);
-		model.addAttribute("list", list);
+	public String index(Model model, Pageable pageable) {
+		Page<User> page = service.findAll(pageable);
+		System.out.println(page);
+		model.addAttribute("page", page);
+		model.addAttribute("url", "");
 		return "users/index";
 	}
 
@@ -193,11 +196,23 @@ public class UserController {
 		return "redirect:/users/";
 	}
 
+	/**
+	 * 検索フォーム表示
+	 * @param form
+	 * @param model
+	 * @return
+	 */
 	@GetMapping("/search")
 	public String greetingForm(@ModelAttribute SearchNameForm form, Model model) {
 		return "users/search/index";
 	}
 
+	/**
+	 * 検索結果表示
+	 * @param form
+	 * @param model
+	 * @return
+	 */
 	@PostMapping("/search")
 	public String greetingSubmit(@ModelAttribute SearchNameForm form, Model model) {
 		List<User> list = service.findByNameContaining(form.getName());
